@@ -1,7 +1,6 @@
 package edu.eci.cvds.ReservationSystem.model;
 
 import java.time.LocalDate;
-
 import org.springframework.data.annotation.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -12,24 +11,46 @@ public class Reservation {
 
     @Id
     private Long id;
+    public Reservation(Long id, Laboratory lab, LocalDate reserveDate, int reserveTime, String userName) {
+        this.id = id;
+        this.lab = lab;
+        this.reserveDate = reserveDate;
+        this.reserveTime = reserveTime;
+        this.userName = userName;
+    }
     private Laboratory lab;
     private LocalDate reserveDate;
     private int reserveTime;
     private String userName;
-
-    public Reservation(Long id,String laboratory, LocalDate reserveDate, int reserveTime, String name){
-
+    public Long getId() {
+        return id;
     }
-
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public Laboratory getLab() {
+        return lab;
+    }
     public void setLab(Laboratory lab) {
         this.lab = lab;
     }
-
-    public void setReserveTime(int reserveTime) {
-        this.reserveTime = reserveTime;
+    public LocalDate getReserveDate() {
+        return reserveDate;
     }
-
     public void setReserveDate(LocalDate reserveDate) {
         this.reserveDate = reserveDate;
     }
+    public int getReserveTime() {
+        return reserveTime;
+    }
+    public void setReserveTime(int reserveTime) {
+        this.reserveTime = reserveTime;
+    }
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
 }
