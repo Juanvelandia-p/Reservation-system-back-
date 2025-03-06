@@ -1,6 +1,7 @@
 package edu.eci.cvds.ReservationSystem.servicios;
 
 
+import edu.eci.cvds.ReservationSystem.controller.model.ReservationDTO;
 import edu.eci.cvds.ReservationSystem.model.*;
 import edu.eci.cvds.ReservationSystem.model.Reservation;
 import edu.eci.cvds.ReservationSystem.mongoConnection.ReservationRepository;
@@ -25,9 +26,9 @@ public class MakeReservationService {
      * @param userName El nombre del usuario que realiza la reserva
      * @return La reserva creada
      */
-    public Reservation makeReservation(Long id, Laboratory lab, LocalDate reserveDate, int reserveTime, String userName) {
+    public Reservation makeReservation(Laboratory lab, LocalDate reserveDate, int reserveTime, String userName) {
         // Crear una nueva reserva
-        Reservation newReservation = new Reservation(id, lab, reserveDate, reserveTime, userName);
+        Reservation newReservation = new Reservation(lab, reserveDate, reserveTime, userName);
 
         // Guardar la reserva en la base de datos
         return reservationRepository.save(newReservation);

@@ -10,8 +10,8 @@ import javax.persistence.Entity;
 public class Reservation {
 
     @Id
-    private Long id;
-    public Reservation(Long id, Laboratory lab, LocalDate reserveDate, int reserveTime, String userName) {
+    private String id;
+    public Reservation(String id, Laboratory lab, LocalDate reserveDate, int reserveTime, String userName) {
         this.id = id;
         this.lab = lab;
         this.reserveDate = reserveDate;
@@ -22,10 +22,10 @@ public class Reservation {
     private LocalDate reserveDate;
     private int reserveTime;
     private String userName;
-    public Long getId() {
+    public String getId() {
         return id;
     }
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
     public Laboratory getLab() {

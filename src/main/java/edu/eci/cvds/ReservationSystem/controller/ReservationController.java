@@ -1,9 +1,9 @@
 package edu.eci.cvds.ReservationSystem.controller;
 
 import edu.eci.cvds.ReservationSystem.servicios.*;
+import edu.eci.cvds.ReservationSystem.controller.model.ReservationDTO;
 import edu.eci.cvds.ReservationSystem.model.Laboratory;
 import edu.eci.cvds.ReservationSystem.model.Reservation;
-
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,8 @@ public class ReservationController {
 
     // Endpoint para crear una nueva reserva
     @PostMapping
-    public Reservation createReservation(@RequestParam Long id,
-                                         @RequestParam Laboratory lab,
-                                         @RequestParam LocalDate reserveDate,
-                                         @RequestParam int reserveTime,
-                                         @RequestParam String userName) {
-        return makeReservationService.makeReservation(id, lab, reserveDate, reserveTime, userName);
+    public Reservation createReservation(@RequestBody ReservationDTO reservation) {
+        return makeReservationService.makeReservation(reservation.lab(), reservation.reserveDate(), reservation.reserveTime(), reservation.userName());
     }
 
     // // Endpoint para obtener una reserva por su id
