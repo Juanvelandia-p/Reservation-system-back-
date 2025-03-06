@@ -18,8 +18,8 @@ public class ReservationController {
 
     // Endpoint para crear una nueva reserva
     @PostMapping
-    public Reservation createReservation(@RequestBody ReservationDTO reservation) {
-        return makeReservationService.makeReservation(reservation.lab(), reservation.reserveDate(), reservation.reserveTime(), reservation.userName());
+    public Reservation createReservation(@RequestBody Reservation reservation) {
+        return makeReservationService.makeReservation(reservation);
     }
 
     // // Endpoint para obtener una reserva por su id

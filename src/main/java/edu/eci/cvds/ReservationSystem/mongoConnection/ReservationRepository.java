@@ -9,9 +9,8 @@ import edu.eci.cvds.ReservationSystem.model.Reservation;
 import edu.eci.cvds.ReservationSystem.model.User;
 
 @Repository
-public interface ReservationRepository extends MongoRepository<Reservation, Long> {
-    
-    Optional findById(Long id);
+public interface ReservationRepository extends MongoRepository<Reservation, String> {
+
 }
 
 
