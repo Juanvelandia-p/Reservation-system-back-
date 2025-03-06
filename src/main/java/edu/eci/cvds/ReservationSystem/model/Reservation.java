@@ -2,11 +2,11 @@ package edu.eci.cvds.ReservationSystem.model;
 
 import java.time.LocalDate;
 import org.springframework.data.annotation.*;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import javax.persistence.Entity;
-import javax.persistence.Table;
 
 @Entity
-@Table(name = "reserves")
 public class Reservation {
 
     @Id

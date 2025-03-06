@@ -1,16 +1,17 @@
 package edu.eci.cvds.ReservationSystem.mongoConnection;
 
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoDatabase;
-import java.util.List;
-import org.springframework.data.repository.query.Param;
+import java.util.Optional;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import edu.eci.cvds.ReservationSystem.model.Reservation;
+import edu.eci.cvds.ReservationSystem.model.User;
+
 @Repository
-interface ReservationRepository extends MongoDatabase{
-	
-	
-	
+public interface ReservationRepository extends MongoRepository<Reservation, Long> {
+    
+    Optional findById(Long id);
 }
+
 
