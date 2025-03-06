@@ -1,4 +1,4 @@
-package edu.eci.cvds.reservationSystem;
+package edu.eci.cvds.ReservationSystem;
 
 public class User {
     private String name;

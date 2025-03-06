@@ -1,4 +1,4 @@
-package edu.eci.cvds.reservationSystem.mongoConnection;
+package edu.eci.cvds.ReservationSystem.mongoConnection;
 
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoClient;

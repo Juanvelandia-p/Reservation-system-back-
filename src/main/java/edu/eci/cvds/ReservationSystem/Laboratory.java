@@ -1,4 +1,4 @@
-package edu.eci.cvds.reservationSystem;
+package edu.eci.cvds.ReservationSystem;
 
 import java.time.LocalDate;
 import java.util.HashMap;
