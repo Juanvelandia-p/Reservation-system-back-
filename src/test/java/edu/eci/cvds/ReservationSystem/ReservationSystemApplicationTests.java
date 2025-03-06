@@ -1,4 +1,4 @@
-package edu.eci.cvds.ReservationSystem;
+package edu.eci.cvds.reservationSystem;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
