@@ -16,6 +16,7 @@ public class MakeReservationService {
     @Autowired
     private ReservationRepository reservationRepository;
 
+
     /**
      * Método para realizar una nueva reserva
      * 
@@ -26,11 +27,9 @@ public class MakeReservationService {
      * @param userName El nombre del usuario que realiza la reserva
      * @return La reserva creada
      */
-    public Reservation makeReservation(Laboratory lab, LocalDate reserveDate, int reserveTime, String userName) {
+    public Reservation makeReservation(Reservation reservation) {
         // Crear una nueva reserva
-        Reservation newReservation = new Reservation(lab, reserveDate, reserveTime, userName);
-
         // Guardar la reserva en la base de datos
-        return reservationRepository.save(newReservation);
+        return reservationRepository.save(reservation);
     }
 }

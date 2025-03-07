@@ -11,7 +11,8 @@ public class Reservation {
 
     @Id
     private String id;
-    public Reservation(String id, Laboratory lab, LocalDate reserveDate, int reserveTime, String userName) {
+
+    public Reservation( Laboratory lab, LocalDate reserveDate, int reserveTime, String userName) {
         this.id = id;
         this.lab = lab;
         this.reserveDate = reserveDate;
