@@ -3,29 +3,34 @@ package edu.eci.cvds.ReservationSystem.model;
 import java.time.LocalDate;
 import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import java.time.LocalDate;
 
 import javax.persistence.Entity;
 
-@Entity
+@Document(collection = "reservations")
 public class Reservation {
-
     @Id
     private String id;
+    private Laboratory lab;
+    private LocalDate reserveDate;
+    private int reserveTime;
+    private String userName;
 
-    public Reservation( Laboratory lab, LocalDate reserveDate, int reserveTime, String userName) {
-        this.id = id;
+    // Constructor sin ID (MongoDB lo genera)
+    public Reservation(Laboratory lab, LocalDate reserveDate, int reserveTime, String userName) {
         this.lab = lab;
         this.reserveDate = reserveDate;
         this.reserveTime = reserveTime;
         this.userName = userName;
     }
-    private Laboratory lab;
-    private LocalDate reserveDate;
-    private int reserveTime;
-    private String userName;
+
+
     public String getId() {
         return id;
     }
+    public Reservation() {}
     public void setId(String id) {
         this.id = id;
     }
