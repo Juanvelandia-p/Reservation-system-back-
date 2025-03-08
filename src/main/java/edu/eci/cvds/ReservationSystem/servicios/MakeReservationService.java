@@ -2,6 +2,7 @@ package edu.eci.cvds.ReservationSystem.servicios;
 
 
 import edu.eci.cvds.ReservationSystem.controller.model.ReservationDTO;
+import edu.eci.cvds.ReservationSystem.exception.ReservationNotFoundException;
 import edu.eci.cvds.ReservationSystem.model.*;
 import edu.eci.cvds.ReservationSystem.mongoConnection.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,12 +49,21 @@ public class MakeReservationService {
 
     public Reservation getReservationById(String id) {
         return reservationRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+            .orElseThrow(() -> new ReservationNotFoundException(ReservationNotFoundException.NOT_FOUND));
     }
 
     public void cancelReservation(String id) {
-        reservationRepository.deleteById(id);
+        if (!reservationRepository.existsById(id)) {
+            throw new ReservationNotFoundException(ReservationNotFoundException.NOT_FOUND);
+        }
+        try {
+            reservationRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ReservationNotFoundException(ReservationNotFoundException.DELETE_ERROR);
+        }
     }
+
+
 
     public boolean isReserved(Laboratory lab, LocalDate date, int time) {
     return reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, date, time);
