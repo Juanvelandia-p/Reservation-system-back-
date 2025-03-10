@@ -37,7 +37,7 @@ public class MakeReservationService {
         );
         
         if (exists) {
-            throw new RuntimeException("El laboratorio ya está reservado en esta fecha y hora");
+            throw new ReservationNotFoundException(ReservationNotFoundException.CONFLICT);
         }
         
         return reservationRepository.save(reservation);
