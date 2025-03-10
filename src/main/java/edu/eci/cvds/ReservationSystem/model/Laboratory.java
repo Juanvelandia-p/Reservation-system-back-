@@ -6,6 +6,9 @@ public class Laboratory {
     private String name;
     private String block;
     
+    // Constructor vacío necesario para MongoDB
+    public Laboratory() {}
+
     public Laboratory(String name, String block){
         this.name = name;
         this.block = block; 
