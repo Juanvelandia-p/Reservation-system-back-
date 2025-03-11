@@ -4,24 +4,25 @@ package edu.eci.cvds.ReservationSystem.servicios;
 import edu.eci.cvds.ReservationSystem.controller.model.ReservationDTO;
 import edu.eci.cvds.ReservationSystem.exception.ReservationNotFoundException;
 import edu.eci.cvds.ReservationSystem.model.*;
+import edu.eci.cvds.ReservationSystem.mongoConnection.LaboratoryRepository;
 import edu.eci.cvds.ReservationSystem.mongoConnection.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MakeReservationService {
 
     @Autowired
     private ReservationRepository reservationRepository;
-
-
+    @Autowired
+    private LaboratoryRepository laboratoryRepository;
     /**
      * Método para realizar una nueva reserva
      * 
-     * @param id El ID de la reserva
      * @param lab El laboratorio a reservar
      * @param reserveDate La fecha de la reservas
      * @param reserveTime El tiempo de la reserva (horario específico)
@@ -29,17 +30,18 @@ public class MakeReservationService {
      * @return La reserva creada
      */
     public Reservation makeReservation(Reservation reservation) {
-        // Validar disponibilidad
-        boolean exists = reservationRepository.existsByLabAndReserveDateAndReserveTime(
-            reservation.getLab(), 
-            reservation.getReserveDate(), 
-            reservation.getReserveTime()
-        );
+        Laboratory lab = laboratoryRepository.findByNameAndBlock(reservation.getLab().getName(), reservation.getLab().getBlock())
+            .orElseThrow(() -> new ReservationNotFoundException(ReservationNotFoundException.LAB_NOT_FOUND));
+    
+        // Verificar disponibilidad
+        boolean ocupado = reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, reservation.getReserveDate(), reservation.getReserveTime());
         
-        if (exists) {
+        if (ocupado) {
             throw new ReservationNotFoundException(ReservationNotFoundException.CONFLICT);
         }
         
+        // Crear reserva
+        reservation.setLab(lab);
         return reservationRepository.save(reservation);
     }
 
