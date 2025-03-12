@@ -65,7 +65,7 @@ public class ReservationController {
         @RequestParam String labName,
         @RequestParam String block,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-        @RequestParam int time) {
+        @RequestParam String time) {
         
         Laboratory lab = new Laboratory(labName, block);
         boolean available = !reservationService.isReserved(lab, date, time);

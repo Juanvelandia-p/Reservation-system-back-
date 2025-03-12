@@ -6,6 +6,7 @@ import edu.eci.cvds.ReservationSystem.exception.ReservationNotFoundException;
 import edu.eci.cvds.ReservationSystem.model.*;
 import edu.eci.cvds.ReservationSystem.mongoConnection.LaboratoryRepository;
 import edu.eci.cvds.ReservationSystem.mongoConnection.ReservationRepository;
+import edu.eci.cvds.ReservationSystem.mongoConnection.HourRangeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,9 @@ public class MakeReservationService {
     private ReservationRepository reservationRepository;
     @Autowired
     private LaboratoryRepository laboratoryRepository;
+    @Autowired
+    private HourRangeRepository hoursRangeRepository; // Repositorio para el horario
+
     /**
      * Método para realizar una nueva reserva
      * 
@@ -33,13 +37,18 @@ public class MakeReservationService {
         Laboratory lab = laboratoryRepository.findByNameAndBlock(reservation.getLab().getName(), reservation.getLab().getBlock())
             .orElseThrow(() -> new ReservationNotFoundException(ReservationNotFoundException.LAB_NOT_FOUND));
     
+        // Verificar si el horario existe     
+        boolean time = hoursRangeRepository.existsByAviableHours(reservation.getReserveTime());
+        if (!time) {
+            throw new ReservationNotFoundException(ReservationNotFoundException.TIME_NOT_FOUND);
+        }
         // Verificar disponibilidad
         boolean ocupado = reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, reservation.getReserveDate(), reservation.getReserveTime());
         
         if (ocupado) {
             throw new ReservationNotFoundException(ReservationNotFoundException.CONFLICT);
         }
-        
+
         // Crear reserva
         reservation.setLab(lab);
         return reservationRepository.save(reservation);
@@ -67,7 +76,7 @@ public class MakeReservationService {
 
 
 
-    public boolean isReserved(Laboratory lab, LocalDate date, int time) {
+    public boolean isReserved(Laboratory lab, LocalDate date, String time) {
     return reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, date, time);
-}
+    }
 }

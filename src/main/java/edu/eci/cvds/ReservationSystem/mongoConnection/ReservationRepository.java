@@ -15,7 +15,7 @@ public interface ReservationRepository extends MongoRepository<Reservation, Stri
     boolean existsByLabAndReserveDateAndReserveTime(
         Laboratory lab, 
         LocalDate reserveDate, 
-        int reserveTime
+        String reserveTime
     );
 }
 
