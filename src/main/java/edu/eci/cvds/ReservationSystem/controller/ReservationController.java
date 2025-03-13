@@ -71,10 +71,6 @@ public class ReservationController {
         return ResponseEntity.ok(available);
     }
 
-    @ExceptionHandler(ReservationNotFoundException.class)
-    public ResponseEntity<String> handleReservationNotFound(ReservationNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception ex) {
