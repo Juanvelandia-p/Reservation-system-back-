@@ -98,4 +98,92 @@ public class MakeReservationServiceTests {
         assertEquals(2, result.size());
     }
 
+    @Test
+    void testMakeReservation_Conflict() {
+        when(laboratoryRepository.findByNameAndBlock(lab.getName(), lab.getBlock())).thenReturn(Optional.of(lab));
+        when(hoursRangeRepository.existsByAviableHours(reserveTime)).thenReturn(true);
+        when(reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, reserveDate, reserveTime)).thenReturn(true); // Simula que ya existe una reserva
+
+        Exception exception = assertThrows(ReservationNotFoundException.class, () -> {
+            makeReservationService.makeReservation(reservation);
+        });
+
+        assertEquals(ReservationNotFoundException.CONFLICT, exception.getMessage());
+    }
+
+    @Test
+    void testCancelReservation_Success() {
+        String reservationId = "123";
+        when(reservationRepository.existsById(reservationId)).thenReturn(true);
+        doNothing().when(reservationRepository).deleteById(reservationId);
+
+        assertDoesNotThrow(() -> makeReservationService.cancelReservation(reservationId));
+        verify(reservationRepository, times(1)).deleteById(reservationId);
+    }
+
+    @Test
+    void testCancelReservation_NotFound() {
+        String reservationId = "123";
+        when(reservationRepository.existsById(reservationId)).thenReturn(false);
+
+        Exception exception = assertThrows(ReservationNotFoundException.class, () -> {
+            makeReservationService.cancelReservation(reservationId);
+        });
+
+        assertEquals(ReservationNotFoundException.NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
+    void testIsReserved_True() {
+        when(reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, reserveDate, reserveTime)).thenReturn(true);
+
+        boolean result = makeReservationService.isReserved(lab, reserveDate, reserveTime);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void testIsReserved_False() {
+        when(reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, reserveDate, reserveTime)).thenReturn(false);
+
+        boolean result = makeReservationService.isReserved(lab, reserveDate, reserveTime);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void testGetReservationById_Success() {
+        when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.of(reservation));
+
+        Reservation result = makeReservationService.getReservationById(reservation.getId());
+
+        assertNotNull(result);
+        assertEquals(reservation.getId(), result.getId());
+        assertEquals(reservation.getReserveDate(), result.getReserveDate());
+    }
+
+    @Test
+    void testGetReservationById_NotFound() {
+        when(reservationRepository.findById("invalidId")).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(ReservationNotFoundException.class, () -> {
+            makeReservationService.getReservationById("invalidId");
+        });
+
+        assertEquals(ReservationNotFoundException.NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
+    void testCancelReservation_DeleteError() {
+        String reservationId = "12345";
+
+        when(reservationRepository.existsById(reservationId)).thenReturn(true);
+        doThrow(new RuntimeException("Database error")).when(reservationRepository).deleteById(reservationId);
+
+        Exception exception = assertThrows(ReservationNotFoundException.class, () -> {
+            makeReservationService.cancelReservation(reservationId);
+        });
+
+        assertEquals(ReservationNotFoundException.DELETE_ERROR, exception.getMessage());
+    }
 }
