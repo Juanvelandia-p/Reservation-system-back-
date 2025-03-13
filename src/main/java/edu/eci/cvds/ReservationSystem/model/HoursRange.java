@@ -2,7 +2,7 @@ package edu.eci.cvds.ReservationSystem.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "config")
+@Document(collection = "hourranges")
 public class HoursRange {
     @Id
     private String id;
