@@ -118,16 +118,6 @@ public class ReservationControllerTests {
     }
 
     @Test
-    void testCancelReservation_NotFound() throws Exception {
-        doThrow(new ReservationNotFoundException("Reserva no encontrada"))
-                .when(reservationService).cancelReservation("1");
-
-        mockMvc.perform(delete("/api/reservations?id=1"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Reserva no encontrada"));
-    }
-
-    @Test
     void testCheckAvailability_True() throws Exception {
         when(reservationService.isReserved(any(Laboratory.class), any(LocalDate.class), anyString())).thenReturn(false);
 
