@@ -1,7 +1,6 @@
 package edu.eci.cvds.ReservationSystem.controller;
 
 import edu.eci.cvds.ReservationSystem.servicios.*;
-import edu.eci.cvds.ReservationSystem.controller.model.ReservationDTO;
 import edu.eci.cvds.ReservationSystem.exception.ReservationNotFoundException;
 import edu.eci.cvds.ReservationSystem.model.Laboratory;
 import edu.eci.cvds.ReservationSystem.model.Reservation;
