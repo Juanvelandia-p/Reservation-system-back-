@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -129,6 +130,21 @@ public class ReservationControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
     }
+
+    @Test
+    void testCheckAvailability_WhenReserved_ShouldReturnFalse() throws Exception {
+        // Simulamos que el laboratorio está reservado para la fecha y hora solicitadas
+        when(reservationService.isReserved(any(Laboratory.class), any(LocalDate.class), anyString()))
+                .thenReturn(true); // está reservado, por lo que la disponibilidad debe ser "false"
+
+        mockMvc.perform(get("/api/reservations/availability")
+                        .param("labName", "Lab1")
+                        .param("block", "BlockA")
+                        .param("date", "2025-03-15")
+                        .param("time", "10:00-12:00"))
+                .andExpect(status().isOk()) // Verificamos que el código de estado sea 200 OK
+                .andExpect(content().string("false")); // Verificamos que la respuesta sea "false" (no disponible)
+    }
     
 
     @Test
@@ -141,7 +157,7 @@ public class ReservationControllerTests {
                 .andExpect(content().string(ReservationNotFoundException.NOT_FOUND));
     }
     @Test
-    void testHandleConflict() {
+    void testHandlerConflict() {
         RuntimeException exception = new RuntimeException("Error de conflicto");
         ResponseEntity<String> response = reservationController.handleConflict(exception);
 
@@ -149,5 +165,45 @@ public class ReservationControllerTests {
         assertEquals("Error de conflicto", response.getBody());
     }
 
+    @Test
+    public void testCancelReservationNotFound() throws Exception {
+        doThrow(new ReservationNotFoundException("Reserva no encontrada")).when(reservationService).cancelReservation(anyString());
+
+        mockMvc.perform(delete("/api/reservations")
+                        .param("id", "123"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Reserva no encontrada"));
+    }
+
+
+    @Test
+    void testHandleGeneralException() throws Exception {
+        // Simulamos otro tipo de excepción genérica (puede ser cualquier excepción no relacionada)
+        Exception genericException = new Exception("Otro error interno");
+
+        // Llamamos al manejador de excepciones directamente
+        ResponseEntity<String> response = reservationController.handleGeneralException(genericException);
+
+        // Verificamos que la respuesta tiene el código de estado 500 (INTERNAL_SERVER_ERROR)
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        // Verificamos que el cuerpo de la respuesta contiene el mensaje esperado
+        assertEquals("Error interno del servidor", response.getBody());
+    }
+
+
+    @Test
+    void testHandleReservationNotFoundException() throws Exception {
+        // Preparación: Creamos una excepción personalizada para lanzar desde el servicio
+        String nonExistentId = "non-existent-id";
+        String errorMessage = "Reserva no encontrada";
+
+        // Simulamos el comportamiento del servicio para lanzar ReservationNotFoundException
+        when(reservationService.getReservationById(nonExistentId)).thenThrow(new ReservationNotFoundException(errorMessage));
+
+        // Realizamos la solicitud GET y pasamos un ID inexistente, lo cual provocará que el controlador maneje la excepción
+        mockMvc.perform(get("/api/reservations?id=" + nonExistentId))
+                .andExpect(status().isNotFound())  // Verificamos que el estado es 404 NOT FOUND
+                .andExpect(content().string(errorMessage));  // Verificamos que el mensaje sea el error que definimos
+    }
 
 }

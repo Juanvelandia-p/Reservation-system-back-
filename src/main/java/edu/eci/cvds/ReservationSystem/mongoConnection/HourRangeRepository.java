@@ -2,7 +2,6 @@ package edu.eci.cvds.ReservationSystem.mongoConnection;
 
 import edu.eci.cvds.ReservationSystem.model.HoursRange;
 import edu.eci.cvds.ReservationSystem.model.Laboratory;
-
 import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
