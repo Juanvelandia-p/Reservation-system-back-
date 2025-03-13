@@ -36,8 +36,17 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Ejecutar pruebas con Maven
-        run: mvn verify
+      - name: Ejecutar pruebas con cobertura JaCoCo
+        run: |
+          mvn test
+          mvn jacoco:report
+
+      - name: Subir reporte de cobertura
+        uses: actions/upload-artifact@v3
+        with:
+          name: reporte-cobertura
+          path: target/site/jacoco
+
 
   deploy:
     runs-on: ubuntu-latest
