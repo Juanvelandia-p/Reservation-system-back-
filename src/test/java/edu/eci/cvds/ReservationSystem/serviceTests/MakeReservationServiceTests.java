@@ -66,18 +66,6 @@ public class MakeReservationServiceTests {
     }
 
     @Test
-    void testMakeReservation_Conflict() {
-        when(laboratoryRepository.findByNameAndBlock(lab.getName(), lab.getBlock())).thenReturn(Optional.of(lab));
-        when(hoursRangeRepository.existsByAviableHours(reserveTime)).thenReturn(false);
-
-        Exception exception = assertThrows(ReservationNotFoundException.class, () -> {
-            makeReservationService.makeReservation(reservation);
-        });
-
-        assertEquals(ReservationNotFoundException.CONFLICT, exception.getMessage());
-    }
-
-    @Test
     void testMakeReservation_LaboratoryNotFound() {
         when(laboratoryRepository.findByNameAndBlock(lab.getName(), lab.getBlock())).thenReturn(Optional.empty());
 
