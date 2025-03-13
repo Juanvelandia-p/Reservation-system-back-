@@ -61,6 +61,22 @@ public class ReservationControllerTests {
     }
 
     @Test
+    void testGetAllReservations_Success() throws Exception {
+        List<Reservation> reservations = Arrays.asList(
+                new Reservation(new Laboratory("Lab1", "BlockA"), LocalDate.of(2025, 3, 12), "10:00 - 12:00", "Juan"),
+                new Reservation(new Laboratory("Lab2", "BlockB"), LocalDate.of(2025, 3, 13), "14:00 - 16:00", "Maria")
+        );
+
+        when(reservationService.getAllReservations()).thenReturn(reservations);
+
+        mockMvc.perform(get("/api/reservations")) // No enviamos parámetro "id"
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].lab.name").value("Lab1"))
+                .andExpect(jsonPath("$[1].lab.name").value("Lab2"));
+    }
+
+    @Test
     void testGetAllReservations() throws Exception {
         List<Reservation> reservations = Arrays.asList(reservation);
         when(reservationService.getAllReservations()).thenReturn(reservations);
@@ -121,5 +137,15 @@ public class ReservationControllerTests {
                 .andExpect(content().string("true"));
     }
     
+
+    @Test
+    void testHandlerReservationNotFound() throws Exception {
+        String reservationId = "non-existent-id";
+        when(reservationService.getReservationById(reservationId)).thenThrow(new ReservationNotFoundException(ReservationNotFoundException.NOT_FOUND));
+
+        mockMvc.perform(get("/api/reservations?id=" + reservationId))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(ReservationNotFoundException.NOT_FOUND));
+    }
 
 }
