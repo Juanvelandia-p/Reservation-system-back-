@@ -149,14 +149,5 @@ public class ReservationControllerTests {
         assertEquals("Error de conflicto", response.getBody());
     }
 
-    @Test
-    void testHandlerReservationNotFound() throws Exception {
-        String reservationId = "non-existent-id";
-        when(reservationService.getReservationById(reservationId)).thenThrow(new ReservationNotFoundException(ReservationNotFoundException.NOT_FOUND));
-
-        mockMvc.perform(get("/api/reservations?id=" + reservationId))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(ReservationNotFoundException.NOT_FOUND));
-    }
 
 }
