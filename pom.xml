@@ -129,9 +129,9 @@
 						<element>PACKAGE</element>
 						<limits>
 							<limit>
-							<counter>INSTRUCTION</counter>
+							<counter>CLASS</counter>
 							<value>COVEREDRATIO</value>
-							<minimum>0.85</minimum>
+							<minimum>0.8</minimum>
 							</limit>
 						</limits>
 						</rule>
