@@ -34,7 +34,9 @@ jobs:
           java-version: '17'
 
       - name: Ejecutar pruebas con cobertura JaCoCo
-        run: mvn verify jacoco:report -X
+        run: 
+          cd /home/runner/work/Reservation-system-back-
+          mvn verify jacoco:report
 
       - name: Subir reporte de cobertura
         uses: actions/upload-artifact@v4
