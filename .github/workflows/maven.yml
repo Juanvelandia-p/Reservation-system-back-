@@ -32,13 +32,13 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-
-      - name: cd
-        run: cd /home/runner/work/Reservation-system-back-
         
-      - name: Ejecutar pruebas con cobertura JaCoCo
-        run: mvn verify jacoco:report
+      - name: Ejecutar pruebas
+        run: mvn verify
 
+      - name: Ejecutar cobertura JaCoCo
+        run: mvn jacoco:report
+        
       - name: Subir reporte de cobertura
         uses: actions/upload-artifact@v4
         with:
