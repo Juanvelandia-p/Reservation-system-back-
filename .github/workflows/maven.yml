@@ -34,8 +34,7 @@ jobs:
           java-version: '17'
 
       - name: Ejecutar pruebas con cobertura JaCoCo
-        run: 
-          mvn verify jacoco:report
+        run: mvn verify jacoco:report -X
 
       - name: Subir reporte de cobertura
         uses: actions/upload-artifact@v4
