@@ -32,11 +32,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+      - name: Checkout del código
+        uses: actions/checkout@v4
 
-      - name: Ejecutar pruebas con cobertura JaCoCo
-        run: |
-          mvn verify
-          mvn jacoco:report
+      - name: Ejecutar pruebas
+        run: mvn verify
+
+      - name: Ejecutar cobertura JaCoCo
+        run: mvn jacoco:report
 
       - name: Subir reporte de cobertura
         uses: actions/upload-artifact@v4
