@@ -63,6 +63,11 @@ jobs:
       - name: Construir el JAR
         run: mvn package -DskipTests
 
+      - name: Login en Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Publicar en Azure App Service
         uses: azure/webapps-deploy@v2
         with:
