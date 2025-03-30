@@ -21,8 +21,9 @@ public class ReservationController {
     private MakeReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody Reservation Reservas) {
-        return ResponseEntity.ok(reservationService.makeReservation(Reservas));
+    public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
+        reservation.setLabName(reservation.getLabName());
+        return ResponseEntity.ok(reservationService.makeReservation(reservation));
     }
 
     // Para obtener todas las reservas

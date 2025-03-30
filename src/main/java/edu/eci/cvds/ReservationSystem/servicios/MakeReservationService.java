@@ -33,7 +33,7 @@ public class MakeReservationService {
      * @return La reserva creada
      */
     public Reservation makeReservation(Reservation reservation) {
-        Laboratory lab = laboratoryRepository.findByNameAndBlock(reservation.getLab().getName(), reservation.getLab().getBlock())
+        Laboratory lab = laboratoryRepository.findByName(reservation.getLabName())
             .orElseThrow(() -> new ReservationNotFoundException(ReservationNotFoundException.LAB_NOT_FOUND));
     
         // Verificar si el horario existe     
@@ -49,7 +49,7 @@ public class MakeReservationService {
         }
 
         // Crear reserva
-        reservation.setLab(lab);
+        reservation.setLabName(lab.getName());
         return reservationRepository.save(reservation);
     }
 
