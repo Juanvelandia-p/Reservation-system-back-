@@ -22,7 +22,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -44,7 +44,64 @@ public class ReservationControllerTests {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(reservationController).build();
-        reservation = new Reservation("BlockA", LocalDate.of(2025, 3, 15), "10:00-12:00", "Juan Perez");
+        reservation = new Reservation("Lab A", LocalDate.now(), "10:00-12:00", "user123");
+        reservation.setId("1");
+    }
+
+    @Test
+    void shouldCreateReservationSuccessfully() {
+        when(reservationService.makeReservation(any(Reservation.class))).thenReturn(reservation);
+
+        ResponseEntity<Reservation> response = reservationController.createReservation(reservation);
+
+        assertNotNull(response.getBody());
+        assertEquals("Lab A", response.getBody().getLabName());
+        assertEquals("1", response.getBody().getId());
+    }
+
+    @Test
+    void shouldReturnAllReservations() {
+        List<Reservation> reservations = Arrays.asList(reservation);
+        when(reservationService.getAllReservations()).thenReturn(reservations);
+
+        ResponseEntity<List<Reservation>> response = reservationController.getAllReservations();
+
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Lab A", response.getBody().get(0).getLabName());
+    }
+
+    @Test
+    void shouldReturnReservationById() {
+        when(reservationService.getReservationById("1")).thenReturn(reservation);
+
+        ResponseEntity<?> response = reservationController.getReservation("1");
+
+        assertNotNull(response.getBody());
+        assertEquals(Reservation.class, response.getBody().getClass());
+        assertEquals("Lab A", ((Reservation) response.getBody()).getLabName());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenReservationDoesNotExist() {
+        when(reservationService.getReservationById("2")).thenThrow(new ReservationNotFoundException("Reserva no encontrada"));
+
+        ResponseEntity<?> response = reservationController.getReservation("2");
+
+        assertEquals(404, response.getStatusCodeValue());
+        assertEquals("Reserva no encontrada", response.getBody());
+    }
+
+    @Test
+    void shouldReturnAllReservationsWhenIdIsNull() {
+        List<Reservation> reservations = Arrays.asList(reservation);
+        when(reservationService.getAllReservations()).thenReturn(reservations);
+
+        ResponseEntity<?> response = reservationController.getReservation(null);
+
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody() instanceof List);
+        assertEquals(1, ((List<?>) response.getBody()).size());
     }
 
     @Test
