@@ -37,17 +37,66 @@ public class MakeReservationServiceTests {
     @InjectMocks
     private MakeReservationService makeReservationService;
 
-    private Laboratory lab;
+    private Laboratory laboratory;
     private Reservation reservation;
     private LocalDate reserveDate;
     private String reserveTime;
 
     @BeforeEach
     void setUp() {
-        lab = new Laboratory("Lab1", "BlockA");
-        reserveDate = LocalDate.of(2025, 3, 12);
-        reserveTime = "10:00 - 12:00";
-        reservation = new Reservation("BlockA", reserveDate, reserveTime, "Juan");
+        laboratory = new Laboratory("Lab A", "Block 1");
+        laboratory.setId("Lab123");
+        reservation = new Reservation("Lab A", LocalDate.now(), "10:00-12:00", "user123");
+        reservation.setId("1");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenLabNotFound() {
+        when(laboratoryRepository.findByName("Lab A")).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(ReservationNotFoundException.class,
+                () -> makeReservationService.makeReservation(reservation));
+
+        assertEquals(ReservationNotFoundException.LAB_NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTimeNotAvailable() {
+        when(laboratoryRepository.findByName("Lab A")).thenReturn(Optional.of(laboratory));
+        when(hoursRangeRepository.existsByAviableHours("10:00-12:00")).thenReturn(false);
+
+        Exception exception = assertThrows(ReservationNotFoundException.class,
+                () -> makeReservationService.makeReservation(reservation));
+
+        assertEquals(ReservationNotFoundException.TIME_NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenReservationConflict() {
+        when(laboratoryRepository.findByName("Lab A")).thenReturn(Optional.of(laboratory));
+        when(hoursRangeRepository.existsByAviableHours("10:00-12:00")).thenReturn(true);
+        when(reservationRepository.existsByLabAndReserveDateAndReserveTime(laboratory, reservation.getReserveDate(), "10:00-12:00"))
+                .thenReturn(true);
+
+        Exception exception = assertThrows(ReservationNotFoundException.class,
+                () -> makeReservationService.makeReservation(reservation));
+
+        assertEquals(ReservationNotFoundException.CONFLICT, exception.getMessage());
+    }
+
+    @Test
+    void shouldCreateReservationSuccessfully() {
+        when(laboratoryRepository.findByName("Lab A")).thenReturn(Optional.of(laboratory));
+        when(hoursRangeRepository.existsByAviableHours("10:00-12:00")).thenReturn(true);
+        when(reservationRepository.existsByLabAndReserveDateAndReserveTime(laboratory, reservation.getReserveDate(), "10:00-12:00"))
+                .thenReturn(false);
+        when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
+
+        Reservation createdReservation = makeReservationService.makeReservation(reservation);
+
+        assertNotNull(createdReservation);
+        assertEquals("Lab A", createdReservation.getLabName());
+        assertEquals("1", createdReservation.getId());
     }
 
     @Test
@@ -84,18 +133,18 @@ public class MakeReservationServiceTests {
 
     @Test
     void testIsReserved_True() {
-        when(reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, reserveDate, reserveTime)).thenReturn(true);
+        when(reservationRepository.existsByLabAndReserveDateAndReserveTime(laboratory, reserveDate, reserveTime)).thenReturn(true);
 
-        boolean result = makeReservationService.isReserved(lab, reserveDate, reserveTime);
+        boolean result = makeReservationService.isReserved(laboratory, reserveDate, reserveTime);
 
         assertTrue(result);
     }
 
     @Test
     void testIsReserved_False() {
-        when(reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, reserveDate, reserveTime)).thenReturn(false);
+        when(reservationRepository.existsByLabAndReserveDateAndReserveTime(laboratory, reserveDate, reserveTime)).thenReturn(false);
 
-        boolean result = makeReservationService.isReserved(lab, reserveDate, reserveTime);
+        boolean result = makeReservationService.isReserved(laboratory, reserveDate, reserveTime);
 
         assertFalse(result);
     }
