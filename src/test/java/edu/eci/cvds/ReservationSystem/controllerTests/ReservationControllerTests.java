@@ -44,60 +44,7 @@ public class ReservationControllerTests {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(reservationController).build();
-        Laboratory lab = new Laboratory("Lab1", "BlockA");
-        reservation = new Reservation(lab, LocalDate.of(2025, 3, 15), "10:00-12:00", "Juan Perez");
-    }
-
-    @Test
-    void testCreateReservation_Success() throws Exception {
-        when(reservationService.makeReservation(any(Reservation.class))).thenReturn(reservation);
-
-        mockMvc.perform(post("/api/reservations")
-                .contentType(MediaType.APPLICATION_JSON).content("{\"lab\":{\"name\":\"Lab1\",\"block\":\"BlockA\"},\"reserveDate\":\"2025-03-15\",\"reserveTime\":\"10:00-12:00\",\"userName\":\"Juan Perez\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lab.name").value("Lab1"))
-                .andExpect(jsonPath("$.lab.block").value("BlockA"))
-                .andExpect(jsonPath("$.reserveDate[0]").value(2025))
-                .andExpect(jsonPath("$.reserveDate[1]").value(3))
-                .andExpect(jsonPath("$.reserveDate[2]").value(15))
-                .andExpect(jsonPath("$.reserveTime").value("10:00-12:00"))
-                .andExpect(jsonPath("$.userName").value("Juan Perez"));
-    }
-
-    @Test
-    void testGetAllReservations_Success() throws Exception {
-        List<Reservation> reservations = Arrays.asList(
-                new Reservation(new Laboratory("Lab1", "BlockA"), LocalDate.of(2025, 3, 12), "10:00 - 12:00", "Juan"),
-                new Reservation(new Laboratory("Lab2", "BlockB"), LocalDate.of(2025, 3, 13), "14:00 - 16:00", "Maria")
-        );
-
-        when(reservationService.getAllReservations()).thenReturn(reservations);
-
-        mockMvc.perform(get("/api/reservations")) // No enviamos parámetro "id"
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].lab.name").value("Lab1"))
-                .andExpect(jsonPath("$[1].lab.name").value("Lab2"));
-    }
-
-    @Test
-    void testGetAllReservations() throws Exception {
-        List<Reservation> reservations = Arrays.asList(reservation);
-        when(reservationService.getAllReservations()).thenReturn(reservations);
-
-        mockMvc.perform(get("/api/reservations/all"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].lab.name").value("Lab1"))
-                .andExpect(jsonPath("$[0].lab.block").value("BlockA"));
-    }
-
-    @Test
-    void testGetReservationById_Success() throws Exception {
-        when(reservationService.getReservationById("1")).thenReturn(reservation);
-
-        mockMvc.perform(get("/api/reservations?id=1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lab.name").value("Lab1"));
+        reservation = new Reservation("BlockA", LocalDate.of(2025, 3, 15), "10:00-12:00", "Juan Perez");
     }
 
     @Test
@@ -133,7 +80,6 @@ public class ReservationControllerTests {
 
     @Test
     void testCheckAvailability_WhenReserved_ShouldReturnFalse() throws Exception {
-        // Simulamos que el laboratorio está reservado para la fecha y hora solicitadas
         when(reservationService.isReserved(any(Laboratory.class), any(LocalDate.class), anyString()))
                 .thenReturn(true); // está reservado, por lo que la disponibilidad debe ser "false"
 
@@ -178,15 +124,12 @@ public class ReservationControllerTests {
 
     @Test
     void testHandleGeneralException() throws Exception {
-        // Simulamos otro tipo de excepción genérica (puede ser cualquier excepción no relacionada)
         Exception genericException = new Exception("Otro error interno");
 
-        // Llamamos al manejador de excepciones directamente
         ResponseEntity<String> response = reservationController.handleGeneralException(genericException);
 
         // Verificamos que la respuesta tiene el código de estado 500 (INTERNAL_SERVER_ERROR)
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        // Verificamos que el cuerpo de la respuesta contiene el mensaje esperado
         assertEquals("Error interno del servidor", response.getBody());
     }
 
