@@ -14,28 +14,28 @@ public class Reservation {
     private String reserveTime;
     private String userName;
     @DBRef // Referencia al documento de Laboratory
-    private String labName;
+    private String lab;
 
     // Constructor sin ID (MongoDB lo genera)
     public Reservation(String labName, LocalDate reserveDate, String reserveTime, String userName) {
-        this.labName = labName;
+        this.lab = labName;
         this.reserveDate = reserveDate;
         this.reserveTime = reserveTime;
         this.userName = userName;
     }
+    public Reservation() {}
 
-    public String getLabName() {
-        return labName;
+    public String getLab() {
+        return lab;
     }
 
-    public void setLabName(String labName) {
-        this.labName = labName;
+    public void setLab(String lab) {
+        this.lab = lab;
     }
 
     public String getId() {
         return id;
     }
-    public Reservation() {}
     public void setId(String id) {
         this.id = id;
     }

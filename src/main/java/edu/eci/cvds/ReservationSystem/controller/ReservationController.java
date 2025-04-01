@@ -23,7 +23,6 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
-        reservation.setLabName(reservation.getLabName());
         return ResponseEntity.ok(reservationService.makeReservation(reservation));
     }
 

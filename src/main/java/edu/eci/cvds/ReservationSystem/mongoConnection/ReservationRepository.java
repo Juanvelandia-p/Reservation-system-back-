@@ -13,7 +13,7 @@ import edu.eci.cvds.ReservationSystem.model.User;
 @Repository
 public interface ReservationRepository extends MongoRepository<Reservation, String> {
     boolean existsByLabAndReserveDateAndReserveTime(
-        String labName, 
+        String lab,
         LocalDate reserveDate, 
         String reserveTime
     );

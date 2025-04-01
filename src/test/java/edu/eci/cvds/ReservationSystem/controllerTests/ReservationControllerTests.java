@@ -1,7 +1,6 @@
 package edu.eci.cvds.ReservationSystem.controllerTests;
 
 import edu.eci.cvds.ReservationSystem.exception.ReservationNotFoundException;
-import edu.eci.cvds.ReservationSystem.model.Laboratory;
 import edu.eci.cvds.ReservationSystem.model.Reservation;
 import edu.eci.cvds.ReservationSystem.controller.ReservationController;
 import edu.eci.cvds.ReservationSystem.servicios.MakeReservationService;
@@ -10,10 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -55,7 +52,7 @@ public class ReservationControllerTests {
         ResponseEntity<Reservation> response = reservationController.createReservation(reservation);
 
         assertNotNull(response.getBody());
-        assertEquals("Lab A", response.getBody().getLabName());
+        assertEquals("Lab A", response.getBody().getLab());
         assertEquals("1", response.getBody().getId());
     }
 
@@ -68,7 +65,7 @@ public class ReservationControllerTests {
 
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
-        assertEquals("Lab A", response.getBody().get(0).getLabName());
+        assertEquals("Lab A", response.getBody().get(0).getLab());
     }
 
     @Test
@@ -79,7 +76,7 @@ public class ReservationControllerTests {
 
         assertNotNull(response.getBody());
         assertEquals(Reservation.class, response.getBody().getClass());
-        assertEquals("Lab A", ((Reservation) response.getBody()).getLabName());
+        assertEquals("Lab A", ((Reservation) response.getBody()).getLab());
     }
 
     @Test

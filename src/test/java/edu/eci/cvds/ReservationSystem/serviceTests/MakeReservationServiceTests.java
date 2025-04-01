@@ -95,7 +95,7 @@ public class MakeReservationServiceTests {
         Reservation createdReservation = makeReservationService.makeReservation(reservation);
 
         assertNotNull(createdReservation);
-        assertEquals("Lab A", createdReservation.getLabName());
+        assertEquals("Lab A", createdReservation.getLab());
         assertEquals("1", createdReservation.getId());
     }
 

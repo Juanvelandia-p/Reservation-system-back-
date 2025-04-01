@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ReservationTests {
 
@@ -23,7 +22,15 @@ public class ReservationTests {
         reservation.setId("12345");
         assertNotNull(reservation.getId(), "El id de la reservación no deberia ser nulo.");
     }
+        @Test
+        public void testEmptyConstructor() {
+            Reservation reservation = new Reservation();
 
+            assertNull(reservation.getId(), "ID should be null");
+            assertNull(reservation.getLab(), "Lab should be null");
+            assertNull(reservation.getReserveDate(), "Reserve date should be null");
+            assertNull(reservation.getReserveTime(), "Reserve time should be null");
+        }
     @Test
     void shouldSetAndGetReserveDate() {
         LocalDate newDate = LocalDate.of(2025, 5, 20);
