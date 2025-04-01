@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/reservations")
+@CrossOrigin(origins = "*") 
 public class ReservationController {
 
     @Autowired
@@ -22,7 +23,6 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
-        reservation.setLabName(reservation.getLabName());
         return ResponseEntity.ok(reservationService.makeReservation(reservation));
     }
 
@@ -68,7 +68,7 @@ public class ReservationController {
         @RequestParam String time) {
         
         Laboratory lab = new Laboratory(labName, block);
-        boolean available = !reservationService.isReserved(lab, date, time);
+        boolean available = !reservationService.isReserved(labName, date, time);
         return ResponseEntity.ok(available);
     }
 
