@@ -13,7 +13,6 @@ public class Reservation {
     private LocalDate reserveDate;
     private String reserveTime;
     private String userName;
-    @DBRef // Referencia al documento de Laboratory
     private String lab;
 
     // Constructor sin ID (MongoDB lo genera)
