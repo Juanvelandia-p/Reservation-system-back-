@@ -1,7 +1,6 @@
 package edu.eci.cvds.ReservationSystem.controllerTests;
 
 import edu.eci.cvds.ReservationSystem.exception.ReservationNotFoundException;
-import edu.eci.cvds.ReservationSystem.model.Laboratory;
 import edu.eci.cvds.ReservationSystem.model.Reservation;
 import edu.eci.cvds.ReservationSystem.controller.ReservationController;
 import edu.eci.cvds.ReservationSystem.servicios.MakeReservationService;
@@ -10,10 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -22,7 +19,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -44,60 +41,64 @@ public class ReservationControllerTests {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(reservationController).build();
-        Laboratory lab = new Laboratory("Lab1", "BlockA");
-        reservation = new Reservation(lab, LocalDate.of(2025, 3, 15), "10:00-12:00", "Juan Perez");
+        reservation = new Reservation("Lab A", LocalDate.now(), "10:00-12:00", "user123");
+        reservation.setId("1");
     }
 
     @Test
-    void testCreateReservation_Success() throws Exception {
+    void shouldCreateReservationSuccessfully() {
         when(reservationService.makeReservation(any(Reservation.class))).thenReturn(reservation);
 
-        mockMvc.perform(post("/api/reservations")
-                .contentType(MediaType.APPLICATION_JSON).content("{\"lab\":{\"name\":\"Lab1\",\"block\":\"BlockA\"},\"reserveDate\":\"2025-03-15\",\"reserveTime\":\"10:00-12:00\",\"userName\":\"Juan Perez\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lab.name").value("Lab1"))
-                .andExpect(jsonPath("$.lab.block").value("BlockA"))
-                .andExpect(jsonPath("$.reserveDate[0]").value(2025))
-                .andExpect(jsonPath("$.reserveDate[1]").value(3))
-                .andExpect(jsonPath("$.reserveDate[2]").value(15))
-                .andExpect(jsonPath("$.reserveTime").value("10:00-12:00"))
-                .andExpect(jsonPath("$.userName").value("Juan Perez"));
+        ResponseEntity<Reservation> response = reservationController.createReservation(reservation);
+
+        assertNotNull(response.getBody());
+        assertEquals("Lab A", response.getBody().getLab());
+        assertEquals("1", response.getBody().getId());
     }
 
     @Test
-    void testGetAllReservations_Success() throws Exception {
-        List<Reservation> reservations = Arrays.asList(
-                new Reservation(new Laboratory("Lab1", "BlockA"), LocalDate.of(2025, 3, 12), "10:00 - 12:00", "Juan"),
-                new Reservation(new Laboratory("Lab2", "BlockB"), LocalDate.of(2025, 3, 13), "14:00 - 16:00", "Maria")
-        );
-
-        when(reservationService.getAllReservations()).thenReturn(reservations);
-
-        mockMvc.perform(get("/api/reservations")) // No enviamos parámetro "id"
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].lab.name").value("Lab1"))
-                .andExpect(jsonPath("$[1].lab.name").value("Lab2"));
-    }
-
-    @Test
-    void testGetAllReservations() throws Exception {
+    void shouldReturnAllReservations() {
         List<Reservation> reservations = Arrays.asList(reservation);
         when(reservationService.getAllReservations()).thenReturn(reservations);
 
-        mockMvc.perform(get("/api/reservations/all"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].lab.name").value("Lab1"))
-                .andExpect(jsonPath("$[0].lab.block").value("BlockA"));
+        ResponseEntity<List<Reservation>> response = reservationController.getAllReservations();
+
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Lab A", response.getBody().get(0).getLab());
     }
 
     @Test
-    void testGetReservationById_Success() throws Exception {
+    void shouldReturnReservationById() {
         when(reservationService.getReservationById("1")).thenReturn(reservation);
 
-        mockMvc.perform(get("/api/reservations?id=1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lab.name").value("Lab1"));
+        ResponseEntity<?> response = reservationController.getReservation("1");
+
+        assertNotNull(response.getBody());
+        assertEquals(Reservation.class, response.getBody().getClass());
+        assertEquals("Lab A", ((Reservation) response.getBody()).getLab());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenReservationDoesNotExist() {
+        when(reservationService.getReservationById("2")).thenThrow(new ReservationNotFoundException("Reserva no encontrada"));
+
+        ResponseEntity<?> response = reservationController.getReservation("2");
+
+        assertEquals(404, response.getStatusCodeValue());
+        assertEquals("Reserva no encontrada", response.getBody());
+    }
+
+    @Test
+    void shouldReturnAllReservationsWhenIdIsNull() {
+        List<Reservation> reservations = Arrays.asList(reservation);
+        when(reservationService.getAllReservations()).thenReturn(reservations);
+
+        ResponseEntity<?> response = reservationController.getReservation(null);
+
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody() instanceof List);
+        assertEquals(1, ((List<?>) response.getBody()).size());
     }
 
     @Test
@@ -120,7 +121,7 @@ public class ReservationControllerTests {
 
     @Test
     void testCheckAvailability_True() throws Exception {
-        when(reservationService.isReserved(any(Laboratory.class), any(LocalDate.class), anyString())).thenReturn(false);
+        when(reservationService.isReserved(any(String.class), any(LocalDate.class), anyString())).thenReturn(false);
 
         mockMvc.perform(get("/api/reservations/availability")
                         .param("labName", "Lab1")
@@ -133,8 +134,7 @@ public class ReservationControllerTests {
 
     @Test
     void testCheckAvailability_WhenReserved_ShouldReturnFalse() throws Exception {
-        // Simulamos que el laboratorio está reservado para la fecha y hora solicitadas
-        when(reservationService.isReserved(any(Laboratory.class), any(LocalDate.class), anyString()))
+        when(reservationService.isReserved(any(String.class), any(LocalDate.class), anyString()))
                 .thenReturn(true); // está reservado, por lo que la disponibilidad debe ser "false"
 
         mockMvc.perform(get("/api/reservations/availability")
@@ -178,15 +178,12 @@ public class ReservationControllerTests {
 
     @Test
     void testHandleGeneralException() throws Exception {
-        // Simulamos otro tipo de excepción genérica (puede ser cualquier excepción no relacionada)
         Exception genericException = new Exception("Otro error interno");
 
-        // Llamamos al manejador de excepciones directamente
         ResponseEntity<String> response = reservationController.handleGeneralException(genericException);
 
         // Verificamos que la respuesta tiene el código de estado 500 (INTERNAL_SERVER_ERROR)
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        // Verificamos que el cuerpo de la respuesta contiene el mensaje esperado
         assertEquals("Error interno del servidor", response.getBody());
     }
 

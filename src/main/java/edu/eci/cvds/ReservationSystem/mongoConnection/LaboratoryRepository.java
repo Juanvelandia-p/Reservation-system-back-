@@ -8,5 +8,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface LaboratoryRepository extends MongoRepository<Laboratory, String> {
     boolean existsByNameAndBlock(String name, String block);
-    Optional<Laboratory> findByNameAndBlock(String name, String block);
+    Optional<Laboratory> findByName(String name);
 }

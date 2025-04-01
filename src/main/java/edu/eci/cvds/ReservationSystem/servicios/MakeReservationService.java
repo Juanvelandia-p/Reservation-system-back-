@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MakeReservationService {
@@ -33,7 +32,7 @@ public class MakeReservationService {
      * @return La reserva creada
      */
     public Reservation makeReservation(Reservation reservation) {
-        Laboratory lab = laboratoryRepository.findByNameAndBlock(reservation.getLab().getName(), reservation.getLab().getBlock())
+        Laboratory lab = laboratoryRepository.findByName(reservation.getLab())
             .orElseThrow(() -> new ReservationNotFoundException(ReservationNotFoundException.LAB_NOT_FOUND));
     
         // Verificar si el horario existe     
@@ -42,14 +41,14 @@ public class MakeReservationService {
             throw new ReservationNotFoundException(ReservationNotFoundException.TIME_NOT_FOUND);
         }
         // Verificar disponibilidad
-        boolean ocupado = reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, reservation.getReserveDate(), reservation.getReserveTime());
+        boolean ocupado = reservationRepository.existsByLabAndReserveDateAndReserveTime(reservation.getLab(), reservation.getReserveDate(), reservation.getReserveTime());
         
         if (ocupado) {
             throw new ReservationNotFoundException(ReservationNotFoundException.CONFLICT);
         }
 
         // Crear reserva
-        reservation.setLab(lab);
+        reservation.setLab(lab.getName());
         return reservationRepository.save(reservation);
     }
 
@@ -75,7 +74,7 @@ public class MakeReservationService {
 
 
 
-    public boolean isReserved(Laboratory lab, LocalDate date, String time) {
+    public boolean isReserved(String lab, LocalDate date, String time) {
     return reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, date, time);
     }
 }

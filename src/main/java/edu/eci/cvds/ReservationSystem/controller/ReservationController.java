@@ -15,14 +15,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/reservations")
+@CrossOrigin(origins = "*") 
 public class ReservationController {
 
     @Autowired
     private MakeReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody Reservation Reservas) {
-        return ResponseEntity.ok(reservationService.makeReservation(Reservas));
+    public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
+        return ResponseEntity.ok(reservationService.makeReservation(reservation));
     }
 
     // Para obtener todas las reservas
@@ -67,7 +68,7 @@ public class ReservationController {
         @RequestParam String time) {
         
         Laboratory lab = new Laboratory(labName, block);
-        boolean available = !reservationService.isReserved(lab, date, time);
+        boolean available = !reservationService.isReserved(labName, date, time);
         return ResponseEntity.ok(available);
     }
 
