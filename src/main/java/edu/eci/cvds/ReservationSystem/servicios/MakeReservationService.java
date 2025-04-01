@@ -26,7 +26,7 @@ public class MakeReservationService {
     /**
      * Método para realizar una nueva reserva
      * 
-     * @param lab El laboratorio a reservar
+     * @param labName El laboratorio a reservar
      * @param reserveDate La fecha de la reservas
      * @param reserveTime El tiempo de la reserva (horario específico)
      * @param userName El nombre del usuario que realiza la reserva
@@ -42,7 +42,7 @@ public class MakeReservationService {
             throw new ReservationNotFoundException(ReservationNotFoundException.TIME_NOT_FOUND);
         }
         // Verificar disponibilidad
-        boolean ocupado = reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, reservation.getReserveDate(), reservation.getReserveTime());
+        boolean ocupado = reservationRepository.existsByLabAndReserveDateAndReserveTime(reservation.getLabName(), reservation.getReserveDate(), reservation.getReserveTime());
         
         if (ocupado) {
             throw new ReservationNotFoundException(ReservationNotFoundException.CONFLICT);
@@ -75,7 +75,7 @@ public class MakeReservationService {
 
 
 
-    public boolean isReserved(Laboratory lab, LocalDate date, String time) {
+    public boolean isReserved(String lab, LocalDate date, String time) {
     return reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, date, time);
     }
 }
