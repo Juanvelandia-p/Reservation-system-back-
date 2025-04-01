@@ -124,7 +124,7 @@ public class ReservationControllerTests {
 
     @Test
     void testCheckAvailability_True() throws Exception {
-        when(reservationService.isReserved(any(Laboratory.class), any(LocalDate.class), anyString())).thenReturn(false);
+        when(reservationService.isReserved(any(String.class), any(LocalDate.class), anyString())).thenReturn(false);
 
         mockMvc.perform(get("/api/reservations/availability")
                         .param("labName", "Lab1")
@@ -137,7 +137,7 @@ public class ReservationControllerTests {
 
     @Test
     void testCheckAvailability_WhenReserved_ShouldReturnFalse() throws Exception {
-        when(reservationService.isReserved(any(Laboratory.class), any(LocalDate.class), anyString()))
+        when(reservationService.isReserved(any(String.class), any(LocalDate.class), anyString()))
                 .thenReturn(true); // está reservado, por lo que la disponibilidad debe ser "false"
 
         mockMvc.perform(get("/api/reservations/availability")
