@@ -3,6 +3,10 @@ package edu.eci.cvds.ReservationSystem.model;
 import javax.persistence.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Representa un laboratorio.
+ * Se almacena en la colección "laboratories" de MongoDB.
+ */
 @Document(collection = "laboratories")
 public class Laboratory {
     @Id
@@ -10,9 +14,17 @@ public class Laboratory {
     private String name;
     private String block;
     
-    // Constructor vacío necesario para MongoDB
+    /**
+     * Constructor vacío necesario para MongoDB.
+     */
     public Laboratory() {}
 
+    /**
+     * Constructor que inicializa los atributos name y block.
+     *
+     * @param name Nombre del laboratorio.
+     * @param block Bloque en el que se ubica el laboratorio.
+     */
     public Laboratory(String name, String block){
         this.name = name;
         this.block = block; 

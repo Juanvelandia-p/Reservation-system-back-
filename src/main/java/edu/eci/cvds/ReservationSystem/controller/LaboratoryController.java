@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controlador REST para la gestión de laboratorios.
+ * Define endpoints para crear y consultar laboratorios.
+ */
 @RestController
 @RequestMapping("/api/laboratories")
 public class LaboratoryController {
@@ -17,6 +21,13 @@ public class LaboratoryController {
     @Autowired
     private LaboratoryService laboratoryService;
 
+    /**
+     * Crea un nuevo laboratorio.
+     *
+     * @param laboratory Objeto Laboratory recibido en el cuerpo de la solicitud.
+     * @return ResponseEntity con el laboratorio creado y estado HTTP 201 (CREATED) o
+     *         un error en caso de conflicto (estado 409).
+     */
     @PostMapping
     public ResponseEntity<?> createLaboratory(@RequestBody Laboratory laboratory) {
         try {
@@ -27,6 +38,11 @@ public class LaboratoryController {
         }
     }
 
+     /**
+     * Obtiene la lista de todos los laboratorios.
+     *
+     * @return ResponseEntity con la lista de laboratorios y estado HTTP 200.
+     */
     @GetMapping
     public ResponseEntity<List<Laboratory>> getAllLaboratories() {
         return ResponseEntity.ok(laboratoryService.getAllLaboratories());

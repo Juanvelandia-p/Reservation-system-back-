@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Servicio para la gestión de reservas.
+ * Métodos para crear, consultar y cancelar reservas, y para verificar la disponibilidad de un laboratorio.
+ */
 @Service
 public class MakeReservationService {
 
@@ -34,33 +38,49 @@ public class MakeReservationService {
     public Reservation makeReservation(Reservation reservation) {
         Laboratory lab = laboratoryRepository.findByName(reservation.getLab())
             .orElseThrow(() -> new ReservationNotFoundException(ReservationNotFoundException.LAB_NOT_FOUND));
-    
-        // Verificar si el horario existe     
+       
         boolean time = hoursRangeRepository.existsByAviableHours(reservation.getReserveTime());
         if (!time) {
             throw new ReservationNotFoundException(ReservationNotFoundException.TIME_NOT_FOUND);
         }
-        // Verificar disponibilidad
+
         boolean ocupado = reservationRepository.existsByLabAndReserveDateAndReserveTime(reservation.getLab(), reservation.getReserveDate(), reservation.getReserveTime());
         
         if (ocupado) {
             throw new ReservationNotFoundException(ReservationNotFoundException.CONFLICT);
         }
 
-        // Crear reserva
         reservation.setLab(lab.getName());
         return reservationRepository.save(reservation);
     }
 
+    /**
+     * Obtiene la lista de todas las reservas.
+     *
+     * @return Lista de objetos Reservation.
+     */
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
     }
 
+    /**
+     * Obtiene una reserva por su identificador.
+     *
+     * @param id Identificador de la reserva.
+     * @return Reserva encontrada.
+     * @throws ReservationNotFoundException Si la reserva no se encuentra.
+     */
     public Reservation getReservationById(String id) {
         return reservationRepository.findById(id)
             .orElseThrow(() -> new ReservationNotFoundException(ReservationNotFoundException.NOT_FOUND));
     }
 
+    /**
+     * Cancela una reserva a partir de su identificador.
+     *
+     * @param id Identificador de la reserva a cancelar.
+     * @throws ReservationNotFoundException Si la reserva no existe o ocurre un error al eliminarla.
+     */
     public void cancelReservation(String id) {
         if (!reservationRepository.existsById(id)) {
             throw new ReservationNotFoundException(ReservationNotFoundException.NOT_FOUND);
@@ -72,8 +92,14 @@ public class MakeReservationService {
         }
     }
 
-
-
+    /**
+     * Verifica si existe una reserva para un laboratorio, en una fecha y hora específica.
+     *
+     * @param lab Nombre del laboratorio.
+     * @param date Fecha de la reserva.
+     * @param time Hora de la reserva.
+     * @return true si la reserva existe, false en caso contrario.
+     */
     public boolean isReserved(String lab, LocalDate date, String time) {
     return reservationRepository.existsByLabAndReserveDateAndReserveTime(lab, date, time);
     }

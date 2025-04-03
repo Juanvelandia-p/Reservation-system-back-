@@ -6,6 +6,10 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 
+/**
+ * Representa una reserva de laboratorio.
+ * Se almacena en la colección "reservations" de MongoDB.
+ */
 @Document(collection = "reservations")
 public class Reservation {
     @Id
@@ -15,7 +19,14 @@ public class Reservation {
     private String userName;
     private String lab;
 
-    // Constructor sin ID (MongoDB lo genera)
+    /**
+     * Constructor sin ID (MongoDB lo genera automáticamente).
+     *
+     * @param labName Nombre del laboratorio a reservar.
+     * @param reserveDate Fecha de la reserva.
+     * @param reserveTime Hora de la reserva.
+     * @param userName Nombre del usuario que realiza la reserva.
+     */
     public Reservation(String labName, LocalDate reserveDate, String reserveTime, String userName) {
         this.lab = labName;
         this.reserveDate = reserveDate;
