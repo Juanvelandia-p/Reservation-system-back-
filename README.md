@@ -4,7 +4,7 @@
 Este proyecto  es para implementar un sistema de reservas de laboratorios, utilizando Spring Boot y MongoDB. El sistema permite gestionar laboratorios, realizar reservas, consultar disponibilidad y cancelar reservas, a través de una API REST.
 
 
-##Diseño
+## Diseño
 
 ![image](https://github.com/user-attachments/assets/a8674e0a-a475-47c5-b6f0-41a77eea9d39)
 
